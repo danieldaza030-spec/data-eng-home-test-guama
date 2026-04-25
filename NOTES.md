@@ -11,6 +11,11 @@
 
 ---
 
+<div align="center">
+  <img src="docs/images/airflow_complete_pipeline.png" alt="Airflow — complete_ml_pipeline graph view" width="750" />
+  <br/><sub><em>Airflow graph view — <code>complete_ml_pipeline</code> running with parallel SVM / LR / KNN training tasks</em></sub>
+</div>
+
 ## DAGs Reference
 
 ### `data_ingest`
@@ -108,11 +113,6 @@ The simulation shifts `PetalLengthCm` by +2.5 cm and `PetalWidthCm` by +1.0 cm, 
 ### 1. Run the first flow
 
 Open the Airflow UI at http://localhost:8080 and launch `complete_ml_pipeline` to walk through the end-to-end flow step by step.
-
-<div align="center">
-  <img src="docs/images/airflow_complete_pipeline.png" alt="Airflow — complete_ml_pipeline graph view" width="750" />
-  <br/><sub><em>Airflow graph view — <code>complete_ml_pipeline</code> running with parallel SVM / LR / KNN training tasks</em></sub>
-</div>
 
 
 ### 2. Review experiments in MLflow
