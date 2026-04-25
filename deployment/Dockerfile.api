@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+# curl is required by the healthcheck.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install Python dependencies before copying application code so that
+# Docker can reuse the layer cache on code-only changes.
+COPY iris_classifier_api/requirements.txt /app/iris_classifier_api/requirements.txt
+RUN pip install --no-cache-dir -r /app/iris_classifier_api/requirements.txt
+
+# Copy application and shared data-models package.
+COPY iris_classifier_api/ /app/iris_classifier_api/
+COPY airflow_orchestator/python/ /app/python/
+
+# Make the project root importable so that "from python.data_models…" works.
+ENV PYTHONPATH=/app
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --retries=5 --start-period=30s \
+    CMD curl --fail http://localhost:8000/info || exit 1
+
+CMD ["uvicorn", "iris_classifier_api.main:app", "--host", "0.0.0.0", "--port", "8000"]

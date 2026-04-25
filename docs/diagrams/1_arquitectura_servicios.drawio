@@ -1,0 +1,181 @@
+<mxfile host="app.diagrams.net" modified="2026-04-25" version="21.0.0" type="device">
+  <diagram name="Arquitectura de Servicios" id="arch">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== TITLE ===== -->
+        <mxCell id="title" value="Iris ML Platform — Arquitectura de Servicios (Docker Compose)"
+          style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;verticalAlign=middle;"
+          vertex="1" parent="1">
+          <mxGeometry x="100" y="20" width="1200" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ROW 1: User-facing services ===== -->
+
+        <!-- airflow-apiserver -->
+        <mxCell id="airflow_web" value="&lt;b&gt;airflow-apiserver&lt;/b&gt;&lt;br&gt;Airflow Web UI + REST API&lt;br&gt;&lt;font color='#555555'&gt;:8080&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="80" y="110" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- mlflow -->
+        <mxCell id="mlflow_svc" value="&lt;b&gt;mlflow&lt;/b&gt;&lt;br&gt;Experiment Tracking + Model Registry&lt;br&gt;&lt;font color='#555555'&gt;:5001 → :5000&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;arcSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="400" y="110" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- iris-api -->
+        <mxCell id="iris_api" value="&lt;b&gt;iris-api&lt;/b&gt;&lt;br&gt;FastAPI Inference Server&lt;br&gt;&lt;font color='#555555'&gt;:8000&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="720" y="110" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- drift-monitor -->
+        <mxCell id="drift_monitor" value="&lt;b&gt;drift-monitor&lt;/b&gt;&lt;br&gt;Streamlit KS Drift Dashboard&lt;br&gt;&lt;font color='#555555'&gt;:8501&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;arcSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1040" y="110" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ROW 2: Celery Workers ===== -->
+
+        <!-- airflow-workers -->
+        <mxCell id="airflow_workers" value="&lt;b&gt;airflow-workers&lt;/b&gt;&lt;br&gt;Celery Workers — ejecutan las tareas de los DAGs&lt;br&gt;&lt;font color='#555555'&gt;MLFLOW_TRACKING_URI=http://mlflow:5000 | AIRFLOW_CONN_IRIS_API_DEFAULT=http://iris-api:8000&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="80" y="280" width="440" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ROW 3: Databases + Broker ===== -->
+
+        <!-- postgres -->
+        <mxCell id="postgres" value="&lt;b&gt;postgres&lt;/b&gt;&lt;br&gt;Airflow Metadata DB"
+          style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;"
+          vertex="1" parent="1">
+          <mxGeometry x="80" y="460" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- mlflow-postgres -->
+        <mxCell id="mlflow_postgres" value="&lt;b&gt;mlflow-postgres&lt;/b&gt;&lt;br&gt;MLflow Backend DB"
+          style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;"
+          vertex="1" parent="1">
+          <mxGeometry x="400" y="460" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- redis -->
+        <mxCell id="redis" value="&lt;b&gt;redis&lt;/b&gt;&lt;br&gt;Celery Broker&lt;br&gt;&lt;font color='#555555'&gt;:6379&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="720" y="460" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- flower (optional profile) -->
+        <mxCell id="flower" value="&lt;b&gt;flower&lt;/b&gt;&lt;br&gt;Celery Monitor&lt;br&gt;&lt;font color='#555555'&gt;:5555 (profile: flower)&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=10;dashed=1;"
+          vertex="1" parent="1">
+          <mxGeometry x="1040" y="460" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ROW 4: Shared Volume ===== -->
+
+        <mxCell id="public_volume" value="&lt;b&gt;/public&lt;/b&gt; — Shared Bind Mount (Airflow workers + iris-api + drift-monitor)&lt;br&gt;/feature_storage/features_iris.csv  |  /prediction_storage/predicted.csv  |  /source_data/simulated.csv"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;arcSize=5;"
+          vertex="1" parent="1">
+          <mxGeometry x="80" y="660" width="880" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== EDGES ===== -->
+
+        <!-- airflow-apiserver schedules airflow-workers -->
+        <mxCell id="e1" value="schedule / REST API"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="airflow_web" target="airflow_workers" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- airflow-apiserver → postgres (metadata) -->
+        <mxCell id="e2" value="metadata"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="airflow_web" target="postgres" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- airflow-workers → redis (Celery broker) -->
+        <mxCell id="e3" value="Celery broker"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="airflow_workers" target="redis" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- airflow-workers → mlflow (MLflow tracking) -->
+        <mxCell id="e4" value="MLflow tracking"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="airflow_workers" target="mlflow_svc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- airflow-workers → iris-api (POST /update_model hot-reload) -->
+        <mxCell id="e5" value="POST /update_model (hot-reload)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="airflow_workers" target="iris_api" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- airflow-workers → /public (R/W feature store + source data) -->
+        <mxCell id="e6" value="R/W feature store"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="airflow_workers" target="public_volume" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- mlflow → mlflow-postgres (backend store) -->
+        <mxCell id="e7" value="backend store"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="mlflow_svc" target="mlflow_postgres" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- iris-api → /public (write predicted.csv) -->
+        <mxCell id="e8" value="write predicted.csv"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="iris_api" target="public_volume" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- drift-monitor → mlflow (read training_dates tag on @champion) -->
+        <mxCell id="e9" value="training_dates tag (@champion)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="drift_monitor" target="mlflow_svc" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- drift-monitor → /public (read features_iris.csv + predicted.csv) -->
+        <mxCell id="e10" value="read features + predictions"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="drift_monitor" target="public_volume" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- drift-monitor → airflow-apiserver (trigger training_pipeline via REST) -->
+        <mxCell id="e11" value="trigger training_pipeline (REST API)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;endArrow=open;"
+          edge="1" source="drift_monitor" target="airflow_web" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- flower → redis (monitors celery workers) -->
+        <mxCell id="e12" value="monitor workers"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;"
+          edge="1" source="flower" target="redis" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

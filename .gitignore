@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Environment / secrets
+.env
+*.env
+.env.*
+
+# Airflow
+logs/
+airflow.db
+airflow-webserver.pid
+standalone_admin_password.txt
+simple_auth_manager_passwords.json.generated
+unittests.cfg
+
+# MLflow
+mlflow/artifacts/
+
+# Public shared volume (runtime data)
+public/feature_storage/
+public/prediction_storage/
+public/source_data/
+
+# Docker
+.dockerignore
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp / misc
+*.log
+*.tmp
+*.bak
+*.swp
+*.orig

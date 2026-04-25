@@ -1,0 +1,6 @@
+streamlit>=1.35.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+matplotlib>=3.8.0,<4.0.0
+scipy>=1.13.0,<2.0.0
+requests>=2.31.0,<3.0.0
+mlflow-skinny>=2.19.0,<3.0.0

@@ -1,0 +1,14 @@
+FROM python:3.11-slim
+
+# curl is required by the docker-compose healthcheck.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MLFlow server dependencies.
+# psycopg2-binary provides PostgreSQL connectivity for the tracking backend.
+RUN pip install --no-cache-dir \
+    "mlflow>=2.19.0,<3.0.0" \
+    "psycopg2-binary>=2.9.0"
+
+EXPOSE 5000

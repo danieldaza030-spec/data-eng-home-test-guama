@@ -1,0 +1,207 @@
+<mxfile host="app.diagrams.net" modified="2026-04-25" version="21.0.0" type="device">
+  <diagram name="Flujo de Datos E2E" id="data_flow_e2e">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== TITLE ===== -->
+        <mxCell id="title" value="Iris ML Platform — Flujo de Datos End-to-End"
+          style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;verticalAlign=middle;"
+          vertex="1" parent="1">
+          <mxGeometry x="100" y="20" width="1100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             FILA PRINCIPAL — pipeline de datos (y=220)
+             ================================================================ -->
+
+        <!-- 1. Data Sources -->
+        <mxCell id="src" value="&lt;b&gt;Data Sources&lt;/b&gt;&lt;br&gt;Kaggle UCI Dataset&lt;br&gt;— o —&lt;br&gt;simulated.csv (synthetic)"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="60" y="210" width="160" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Data Ingest Pipeline -->
+        <mxCell id="ingest" value="&lt;b&gt;Data Ingest Pipeline&lt;/b&gt;&lt;br&gt;download_iris_data&lt;br&gt;↓ validate_iris_data&lt;br&gt;↓ transform_iris_data"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="290" y="210" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 3. Feature Store -->
+        <mxCell id="feature_store" value="&lt;b&gt;Feature Store&lt;/b&gt;&lt;br&gt;features_iris.csv&lt;br&gt;&lt;font color='#888'&gt;/public/feature_storage/&lt;br&gt;col: processed_at (UTC)&lt;/font&gt;"
+          style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;"
+          vertex="1" parent="1">
+          <mxGeometry x="530" y="205" width="170" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Training Pipeline -->
+        <mxCell id="training" value="&lt;b&gt;Training Pipeline&lt;/b&gt;&lt;br&gt;SVM | LR | KNN&lt;br&gt;GridSearchCV + StandardScaler&lt;br&gt;MLflow run logging"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="775" y="210" width="175" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 5. MLflow Registry -->
+        <mxCell id="mlflow_reg" value="&lt;b&gt;MLflow Registry&lt;/b&gt;&lt;br&gt;iris_classifier&lt;br&gt;@champion&lt;br&gt;&lt;font color='#888'&gt;tag: training_dates&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="1020" y="210" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 6. FastAPI -->
+        <mxCell id="fastapi" value="&lt;b&gt;FastAPI&lt;/b&gt;&lt;br&gt;POST /predict&lt;br&gt;GET /info&lt;br&gt;&lt;font color='#888'&gt;:8000&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="1265" y="210" width="155" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- 7. Prediction Store -->
+        <mxCell id="pred_store" value="&lt;b&gt;Prediction Store&lt;/b&gt;&lt;br&gt;predicted.csv&lt;br&gt;&lt;font color='#888'&gt;/public/prediction_storage/&lt;br&gt;col: prediction_at (UTC)&lt;/font&gt;"
+          style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;"
+          vertex="1" parent="1">
+          <mxGeometry x="1485" y="205" width="155" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             FILA INFERIOR — generate_synthetic_data + Drift Monitor
+             ================================================================ -->
+
+        <!-- generate_synthetic_data DAG (sobre la prediction store) -->
+        <mxCell id="gen_data" value="&lt;b&gt;generate_synthetic_data&lt;/b&gt;&lt;br&gt;mode: normal | drifted | dirty&lt;br&gt;&lt;font color='#888'&gt;genera tráfico de producción simulado&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="1330" y="80" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- 8. Drift Monitor -->
+        <mxCell id="drift_mon" value="&lt;b&gt;Drift Monitor&lt;/b&gt;&lt;br&gt;KS test (alpha=0.05)&lt;br&gt;feature_store vs predicted.csv&lt;br&gt;&lt;font color='#888'&gt;@daily | min 30 filas&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="1265" y="430" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Streamlit Dashboard (junto al drift monitor) -->
+        <mxCell id="streamlit" value="&lt;b&gt;Streamlit Dashboard&lt;/b&gt;&lt;br&gt;:8501&lt;br&gt;&lt;font color='#888'&gt;histogramas + KS table&lt;br&gt;botón retraining manual&lt;/font&gt;"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;arcSize=8;"
+          vertex="1" parent="1">
+          <mxGeometry x="1485" y="430" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             EDGES — pipeline principal
+             ================================================================ -->
+
+        <!-- src → ingest -->
+        <mxCell id="ef1" value="CSV raw"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="src" target="ingest" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ingest → feature_store -->
+        <mxCell id="ef2" value="features + processed_at"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="ingest" target="feature_store" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- feature_store → training -->
+        <mxCell id="ef3" value="training data"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="feature_store" target="training" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- training → mlflow_reg -->
+        <mxCell id="ef4" value="register best model&lt;br&gt;(f1_macro)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="training" target="mlflow_reg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- mlflow_reg → fastapi -->
+        <mxCell id="ef5" value="load @champion&lt;br&gt;(hot-reload)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="mlflow_reg" target="fastapi" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- fastapi → pred_store -->
+        <mxCell id="ef6" value="log prediction"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="fastapi" target="pred_store" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             EDGES — drift monitoring loop
+             ================================================================ -->
+
+        <!-- pred_store → drift_mon -->
+        <mxCell id="ef7" value="predicted.csv"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;"
+          edge="1" source="pred_store" target="drift_mon" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- feature_store → drift_mon (referencia de entrenamiento) -->
+        <mxCell id="ef8" value="training reference&lt;br&gt;(filtrado por training_dates)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;endArrow=open;"
+          edge="1" source="feature_store" target="drift_mon" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="615" y="570" />
+              <mxPoint x="1265" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- drift_mon → training (trigger retraining) -->
+        <mxCell id="ef9" value="trigger retraining&lt;br&gt;(p &lt; 0.05 en alguna feature)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b85450;fontColor=#b85450;fontStyle=1;dashed=1;"
+          edge="1" source="drift_mon" target="training" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1265" y="480" />
+              <mxPoint x="862" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- gen_data → pred_store (simulated traffic) -->
+        <mxCell id="ef10" value="POST /predict&lt;br&gt;(filas válidas)"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#d6b656;"
+          edge="1" source="gen_data" target="pred_store" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- drift_mon → streamlit (same data source) -->
+        <mxCell id="ef11" value="misma lógica KS"
+          style="edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;"
+          edge="1" source="drift_mon" target="streamlit" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             NOTAS ACLARATORIAS
+             ================================================================ -->
+
+        <mxCell id="note_champion" value="Solo mueve @champion si&lt;br&gt;f1_macro &gt; campeón actual"
+          style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=15;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1020" y="340" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note_skip" value="AirflowSkipException&lt;br&gt;si &lt;30 filas en algún CSV"
+          style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;"
+          vertex="1" parent="1">
+          <mxGeometry x="1050" y="430" width="170" height="55" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
