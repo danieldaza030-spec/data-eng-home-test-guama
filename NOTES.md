@@ -184,12 +184,7 @@ If `on_validation_error=drop_invalid_rows`, the invalid rows are removed, a clea
 
 ### 1. Proper Feature Store
 
-Replace the CSV-based feature store with a dedicated tool such as **Feast**. A real feature store provides:
-
-- Point-in-time correct feature retrieval (prevents data leakage between training and serving).
-- Feature versioning and lineage tracking.
-- Online/offline store separation — the online store serves low-latency features to the API; the offline store feeds batch training jobs.
-- Feature sharing across multiple models and teams.
+Replace the CSV-based feature store with a dedicated tool such as **Feast**.
 
 ### 2. Data Versioning with DVC
 
