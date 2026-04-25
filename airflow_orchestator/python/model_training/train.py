@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import mlflow
 import mlflow.sklearn
 from mlflow.entities import ViewType
+from mlflow.exceptions import MlflowException
 from mlflow.tracking import MlflowClient
 import numpy as np
 import pandas as pd
@@ -317,14 +318,23 @@ def _ensure_experiment_with_proxy_uri(
                 exc,
             )
 
-    client.create_experiment(
-        name=experiment_name,
-        artifact_location="mlflow-artifacts:/",
-    )
-    logger.info(
-        "Created MLFlow experiment '%s' with artifact_location='mlflow-artifacts:/'.",
-        experiment_name,
-    )
+    try:
+        client.create_experiment(
+            name=experiment_name,
+            artifact_location="mlflow-artifacts:/",
+        )
+        logger.info(
+            "Created MLFlow experiment '%s' with artifact_location='mlflow-artifacts:/'.",
+            experiment_name,
+        )
+    except MlflowException as exc:
+        if "UniqueViolation" in str(exc) or "already exists" in str(exc).lower():
+            logger.info(
+                "Experiment '%s' was created by a concurrent task; continuing.",
+                experiment_name,
+            )
+        else:
+            raise
 
 
 def register_best_model(
